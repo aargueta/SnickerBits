@@ -1,3 +1,10 @@
+# Vivado directories
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.srcs/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
