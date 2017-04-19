@@ -32,11 +32,15 @@ typedef struct {
   logic [63:0] length;
   HashState state;
   logic [31:0] curlen;
-  logic [7:0][31:0] buffer;
+  logic [31:0] buffer;
 } ShaContext;
 
+const int NUM_LENGTH_BYTES = 64/8;
+const int MANDATORY_PADDING_BYTES = 1 + NUM_LENGTH_BYTES;
+const int MEM_WORD_BYTES = 4;
 const int BYTES_IN_CHUNK = 64;
-typedef logic [511:0] Chunk;
+const int MEM_WORDS_PER_CHUNK = (BYTES_IN_CHUNK / MEM_WORD_BYTES);
+typedef logic [15:0][31:0] Chunk;
 
 function logic[31:0] rightRotate32(logic [31:0] val, int bits);
   rightRotate32 = (val >> bits) | (val << (32 - bits));

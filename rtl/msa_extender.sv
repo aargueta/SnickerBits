@@ -8,7 +8,7 @@ module msa_extender (
 
   input logic chunk_vld,
   output logic chunk_rdy,
-  input logic [511:0] chunk_data,
+  input logic [15:0][31:0] chunk_data,
 
   input logic w_rdy,
   output logic w_vld,
@@ -70,11 +70,16 @@ always @(posedge clk) begin
 end
 
 // Load chunk data
-always @(posedge clk) begin
-  if(chunk_vld) begin
-    w[(16*32)-1:0] <= chunk_data;
+genvar i;
+generate
+  for (i = 0; i < 16; i++) begin
+    always @(posedge clk) begin
+      if(chunk_vld) begin
+        w[i] <= chunk_data[i];
+      end
+    end
   end
-end
+endgenerate
 
 // W readiness timer
 always @(posedge clk) begin
@@ -88,7 +93,6 @@ end
 assign w_vld = state == OUTPUT;
 
 
-genvar i;
 generate
   for (i = 16; i < 64; i++) begin : extend_msa
     logic [31:0] s0;

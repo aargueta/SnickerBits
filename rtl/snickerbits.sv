@@ -10,9 +10,9 @@ logic ctx_rdy;
 logic ctx_vld;
 sha256_pkg::ShaContext ctx;
 
-logic  buf_data_rdy;
-logic  buf_data_vld;
-logic [31:0]  buf_data;
+logic [31:0] mem_addr;
+logic mem_data_vld;
+logic [31:0] mem_data;
 
 always_ff @(posedge clk_axi) begin
   if(rst) begin
@@ -23,14 +23,20 @@ always_ff @(posedge clk_axi) begin
     ctx.buffer <= '0;
   end else begin
     ctx_vld <= 1'b1;
-    ctx.length <= 64'h1;
+    ctx.length <= 64'd128;
     ctx.state <= '0;
     ctx.curlen <= 64'h1;
     ctx.buffer <= '0;
   end
 end
 
-sha256 sha(
+// Dummy "RAM"
+assign mem_data_vld = 1'b1;
+always @(posedge clk_axi) begin
+  mem_data <= {mem_addr[7:0] + 8'd3, mem_addr[7:0] + 8'd2, mem_addr[7:0] + 8'd1, mem_addr[7:0]};
+end
+
+sha256 i_sha256 (
   .clk         (clk_axi),
   .rst         (rst),
 
@@ -38,10 +44,11 @@ sha256 sha(
   .ctx_vld     (ctx_vld),
   .ctx         (ctx),
 
-  .buf_data_rdy(buf_data_rdy),
-  .buf_data_vld(buf_data_vld),
-  .buf_data    (buf_data)
+  .mem_addr    (mem_addr),
+  .mem_data_vld(mem_data_vld),
+  .mem_data    (mem_data)
 );
+
 
 always @(posedge clk_axi) begin
   if(rst) begin
