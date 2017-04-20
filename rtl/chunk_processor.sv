@@ -3,6 +3,7 @@ module chunk_processor (
   input rst,
 
   // Memory interface
+  output logic mem_addr_vld,
   output logic [31:0] mem_addr,
   input logic mem_data_vld,
   input logic [31:0] mem_data,
@@ -66,6 +67,19 @@ always_ff @(posedge clk) begin
   end
 end
 
+
+always @(posedge clk) begin
+  case (state)
+    CTX_LOAD: begin
+      mem_addr <= ctx.buffer;
+    end
+    CHUNK_FILL: begin
+      mem_addr <= mem_addr + (nstate == CHUNK_FILL? sha256_pkg::MEM_WORD_BYTES : 32'h0);
+    end
+    default : ;
+  endcase
+end
+
 logic [31:0] ctx_rd_offset;
 logic [31:0] chunk_rd_offset;
 always @(posedge clk) begin
@@ -91,7 +105,8 @@ end
 assign chunk_loaded = (chunk_rd_offset + sha256_pkg::MEM_WORD_BYTES >= sha256_pkg::BYTES_IN_CHUNK);
 assign chunk_out_vld = (state == CHUNK_READY);
 assign is_last_chunk = (ca_state != DATA);
-assign mem_addr = ctx.buffer + ctx_rd_offset;
+// assign mem_addr = ctx.buffer + ctx_rd_offset;
+assign mem_addr_vld = (state == CHUNK_FILL);
 
 logic [31:0] payload_remainder;
 logic [31:0] pad_zero_bytes;
@@ -149,8 +164,10 @@ ChunkAssemblyState nca_state;
 always_comb begin
   if(rst) begin
     nca_state = DATA;
-  end else if(state == IDLE) begin
+  end else if(state == IDLE || state == CTX_LOAD) begin
     nca_state = DATA;
+  end else if(state == CHUNK_READY) begin
+    nca_state = ca_state;
   end else begin
     case (ca_state)
       DATA:     nca_state = mem_data_full_word? DATA : END_WORD;
@@ -158,7 +175,7 @@ always_comb begin
       ZERO_PAD: nca_state = (ctx_rd_offset + sha256_pkg::MEM_WORD_BYTES < zero_pad_limit)? ZERO_PAD : LENGTH_1;
       LENGTH_1: nca_state = LENGTH_2;
       LENGTH_2: nca_state = DONE;
-      DONE:     nca_state = (state == IDLE)? DATA : DONE;
+      DONE:     nca_state = DONE; // Catch here until "reset"
       default : nca_state = DATA;
     endcase
   end
@@ -167,7 +184,7 @@ end
 always_ff @(posedge clk) begin
   if(rst) begin
     ca_state <= DATA;
-  end else if(nstate == CHUNK_FILL) begin
+  end else begin
     ca_state <= nca_state;
   end
 end

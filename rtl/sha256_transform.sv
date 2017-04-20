@@ -8,7 +8,7 @@ module sha256_transform (
 
   output logic chunk_data_rdy,
   input logic chunk_data_vld,
-  input logic [511:0] chunk_data,
+  input logic [15:0][31:0] chunk_data,
 
   input logic ctx_out_rdy,
   output logic ctx_out_vld,

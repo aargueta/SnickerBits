@@ -10,6 +10,7 @@ logic ctx_rdy;
 logic ctx_vld;
 sha256_pkg::ShaContext ctx;
 
+logic mem_addr_vld;
 logic [31:0] mem_addr;
 logic mem_data_vld;
 logic [31:0] mem_data;
@@ -31,9 +32,9 @@ always_ff @(posedge clk_axi) begin
 end
 
 // Dummy "RAM"
-assign mem_data_vld = 1'b1;
 always @(posedge clk_axi) begin
   mem_data <= {mem_addr[7:0] + 8'd3, mem_addr[7:0] + 8'd2, mem_addr[7:0] + 8'd1, mem_addr[7:0]};
+  mem_data_vld <= mem_addr_vld;
 end
 
 sha256 i_sha256 (
@@ -44,6 +45,7 @@ sha256 i_sha256 (
   .ctx_vld     (ctx_vld),
   .ctx         (ctx),
 
+  .mem_addr_vld(mem_addr_vld),
   .mem_addr    (mem_addr),
   .mem_data_vld(mem_data_vld),
   .mem_data    (mem_data)

@@ -8,6 +8,7 @@ module sha256 (
   input logic ctx_vld,
   input sha256_pkg::ShaContext ctx,
 
+  output logic mem_addr_vld,
   output logic [31:0] mem_addr,
   input logic mem_data_vld,
   input logic [31:0] mem_data
@@ -21,6 +22,7 @@ chunk_processor i_chunk_processor (
   .clk          (clk),
   .rst          (rst),
 
+  .mem_addr_vld (mem_addr_vld),
   .mem_addr     (mem_addr),
   .mem_data_vld (mem_data_vld),
   .mem_data     (mem_data),
