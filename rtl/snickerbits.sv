@@ -24,9 +24,9 @@ always_ff @(posedge clk_axi) begin
     ctx.buffer <= '0;
   end else begin
     ctx_vld <= 1'b1;
-    ctx.length <= 64'd128;
+    ctx.length <= 64'd256;
     ctx.state <= '0;
-    ctx.curlen <= 64'h1;
+    ctx.curlen <= 64'd256;
     ctx.buffer <= '0;
   end
 end

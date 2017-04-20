@@ -24,11 +24,12 @@ typedef enum logic [2:0] {
 } MsaCompressorState;
 
 
+MsaCompressorState state_d1;
 MsaCompressorState state;
 MsaCompressorState nstate;
 logic ctx_in_latched;
 logic w_latched;
-logic [5:0] ctx_out_rdy_count;
+logic [7:0] ctx_out_rdy_count;
 
 always @(*) begin
   if(rst) begin
@@ -37,8 +38,8 @@ always @(*) begin
     case (nstate)
       IDLE: nstate = LOAD;
       LOAD: nstate = (ctx_in_latched & w_latched)? PROCESSING : LOAD;
-      PROCESSING: nstate = (ctx_out_rdy_count >= 6'd64)? OUTPUT : PROCESSING;
-      OUTPUT: nstate = ctx_out_rdy? IDLE : OUTPUT;
+      PROCESSING: nstate = (ctx_out_rdy_count >= 8'd64)? OUTPUT : PROCESSING;
+      OUTPUT: nstate = ctx_out_rdy? LOAD : OUTPUT;
       default : nstate = IDLE;
     endcase
   end
@@ -47,8 +48,10 @@ end
 always_ff @(posedge clk) begin
   if(rst) begin
     state <= IDLE;
+    state_d1 <= IDLE;
   end else begin
     state <= nstate;
+    state_d1 <= state;
   end
 end
 
@@ -57,35 +60,53 @@ logic [64:0][31:0] a, b, c, d, e, f, g, h;
 logic [63:0][31:0] w_d1;
 
 // Input latching
+sha256_pkg::ShaContext ctx_latch;
 always @(posedge clk) begin
-  if(ctx_in_vld) begin
-    ctx_out.length <= ctx_in.length;
+  if(ctx_in_vld & ctx_in_rdy) begin
+    ctx_latch.length <= ctx_in.length;
     {a[0], b[0], c[0], d[0], e[0], f[0], g[0], h[0]} <= ctx_in.state;
-    ctx_out.curlen <= ctx_in.curlen;
-    ctx_out.buffer <= ctx_in.buffer;
+    ctx_latch.curlen <= ctx_in.curlen > sha256_pkg::BYTES_IN_CHUNK?
+                        ctx_in.curlen - sha256_pkg::BYTES_IN_CHUNK : 0;
+    ctx_latch.buffer <= ctx_in.buffer;
   end
-  if(w_vld) begin
+  if(w_vld & w_rdy) begin
     w_d1 <= w_vld;
   end
 end
 
 always @(posedge clk) begin
-  if(state == IDLE) begin
-    ctx_in_rdy <= 1'b0;
-    w_rdy <= 1'b0;
-    ctx_in_latched <= 1'b0;
-    w_latched <= 1'b0;
-  end else if(state == LOAD) begin
-    ctx_in_rdy <= ~ctx_in_latched;
-    w_rdy <= ~w_latched;
-    ctx_in_latched <= ctx_in_latched | (ctx_in_rdy & ctx_in_vld);
-    w_latched <= w_latched | (w_rdy & w_vld);
-  end else begin
-    ctx_in_rdy <= 1'b0;
-    w_rdy <= 1'b0;
-    ctx_in_latched <= ctx_in_latched;
-    w_latched <= w_latched;
-  end
+  case (state)
+    IDLE: begin
+      ctx_in_rdy <= 1'b0;
+      w_rdy <= 1'b0;
+      ctx_in_latched <= 1'b0;
+      w_latched <= 1'b0;
+    end
+    LOAD: begin
+      ctx_in_rdy <= ~ctx_in_latched;
+      w_rdy <= ~w_latched;
+      ctx_in_latched <= ctx_in_latched | (ctx_in_rdy & ctx_in_vld);
+      w_latched <= w_latched | (w_rdy & w_vld);
+    end
+    PROCESSING: begin
+      ctx_in_rdy <= 1'b0;
+      w_rdy <= 1'b0;
+      ctx_in_latched <= 1'b0;
+      w_latched <= 1'b0;
+    end
+    OUTPUT: begin
+      ctx_in_rdy <= ~ctx_in_latched;
+      w_rdy <= ~w_latched;
+      ctx_in_latched <= ctx_in_latched | (ctx_in_rdy & ctx_in_vld);
+      w_latched <= w_latched | (w_rdy & w_vld);
+    end
+    default : begin
+      ctx_in_rdy <= 1'b0;
+      w_rdy <= 1'b0;
+      ctx_in_latched <= ctx_in_latched;
+      w_latched <= w_latched;
+    end
+  endcase
 end
 
 // Ctx out readiness timer
@@ -97,7 +118,7 @@ always @(posedge clk) begin
   end
 end
 
-assign ctx_out_vld = state == OUTPUT;
+assign ctx_out_vld = (state == OUTPUT) && (state_d1 == OUTPUT);
 
 genvar i;
 generate
@@ -137,14 +158,21 @@ endgenerate
 
 
 always @(posedge clk) begin
-  ctx_out.state[7] <= a[0] + a[64];
-  ctx_out.state[6] <= b[0] + b[64];
-  ctx_out.state[5] <= c[0] + c[64];
-  ctx_out.state[4] <= d[0] + d[64];
-  ctx_out.state[3] <= e[0] + e[64];
-  ctx_out.state[2] <= f[0] + f[64];
-  ctx_out.state[1] <= g[0] + g[64];
-  ctx_out.state[0] <= h[0] + h[64];
+  if((state == OUTPUT) && (state_d1 == PROCESSING)) begin
+    ctx_out.length <= ctx_latch.length;
+    ctx_out.state[7] <= a[0] + a[64];
+    ctx_out.state[6] <= b[0] + b[64];
+    ctx_out.state[5] <= c[0] + c[64];
+    ctx_out.state[4] <= d[0] + d[64];
+    ctx_out.state[3] <= e[0] + e[64];
+    ctx_out.state[2] <= f[0] + f[64];
+    ctx_out.state[1] <= g[0] + g[64];
+    ctx_out.state[0] <= h[0] + h[64];
+    ctx_out.curlen <= ctx_latch.curlen;
+    ctx_out.buffer <= ctx_latch.buffer;
+  end else begin
+    ctx_out <= ctx_out;
+  end
 end
 
 endmodule

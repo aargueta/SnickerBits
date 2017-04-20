@@ -48,25 +48,25 @@ chunk_processor i_chunk_processor (
 // end
 
 
-logic ctx_out_rdy;
-logic ctx_out_vld;
-sha256_pkg::ShaContext ctx_out;
-assign ctx_out_rdy = 1'b1;
+logic hash_rdy;
+logic hash_vld;
+logic [255:0] hash;
+assign hash_rdy = 1'b1;
 sha256_transform ctx_transform(
   .clk           (clk),
   .rst           (rst),
 
-  .ctx_in_rdy    (/*ctx_rdy*/),
-  .ctx_in_vld    (ctx_vld),
-  .ctx_in        (ctx),
+  .ctx_rdy    (/*ctx_rdy*/),
+  .ctx_vld    (ctx_vld),
+  .ctx        (ctx),
 
   .chunk_data_rdy(chunk_out_rdy),
   .chunk_data_vld(chunk_out_vld),
   .chunk_data    (chunk_out),
 
-  .ctx_out_rdy   (ctx_out_rdy),
-  .ctx_out_vld   (ctx_out_vld),
-  .ctx_out       (ctx_out)
+  .hash_rdy   (hash_rdy),
+  .hash_vld   (hash_vld),
+  .hash       (hash)
 );
 
 
