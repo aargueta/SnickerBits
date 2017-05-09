@@ -4,6 +4,7 @@
 *.ip_user_files/
 *.sim/
 *.srcs/
+*.runs/
 
 # Windows image file caches
 Thumbs.db
