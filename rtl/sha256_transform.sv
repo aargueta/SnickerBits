@@ -56,6 +56,9 @@ typedef enum {
 
 CompressionLoopState state;
 CompressionLoopState nstate;
+assign hash_vld = (state == DONE);
+assign hash = ctx_out.state;
+
 always_comb begin
   if(rst) begin
     nstate = LOADING;
@@ -64,7 +67,7 @@ always_comb begin
       LOADING: nstate = (ctx_rdy & ctx_vld)? COMPRESSING : LOADING;
       COMPRESSING: begin
         if(ctx_out_vld & ctx_out_rdy) begin
-          nstate = (ctx_out.curlen > 0)? DONE : COMPRESSING;
+          nstate = (ctx_out.curlen > 0)? COMPRESSING : DONE;
         end else begin
           nstate = state;
         end

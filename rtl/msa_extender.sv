@@ -29,7 +29,7 @@ always @(*) begin
     case (nstate)
       IDLE: nstate = LOAD;
       LOAD: nstate = chunk_latched? PROCESSING : LOAD;
-      PROCESSING: nstate = (w_rdy_count >= 6'd21)? OUTPUT : PROCESSING;
+      PROCESSING: nstate = (w_rdy_count >= 6'd48)? OUTPUT : PROCESSING;
       OUTPUT: nstate = w_rdy? IDLE : OUTPUT;
       default : nstate = IDLE;
     endcase
@@ -59,12 +59,13 @@ always @(posedge clk) begin
 end
 
 // Load chunk data
+logic [48:0][63:0][31:0] w_temp;
 genvar i;
 generate
   for (i = 0; i < 16; i++) begin
     always @(posedge clk) begin
       if(chunk_vld) begin
-        w[i] <= chunk_data[i];
+        w_temp[0][i] <= chunk_data[i];
       end
     end
   end
@@ -82,20 +83,33 @@ end
 assign w_vld = state == OUTPUT;
 
 
+genvar j;
 generate
   for (i = 16; i < 64; i++) begin : extend_msa
-    logic [31:0] s0;
-    logic [31:0] s1;
-    always_comb begin
-      s0 <= sha256_pkg::rightRotate32(w[i-15], 7) ^
-            sha256_pkg::rightRotate32(w[i-15], 18) ^
-            sha256_pkg::rightRotate32(w[i-15], 3);
-      s1 <= sha256_pkg::rightRotate32(w[i-2], 17) ^
-            sha256_pkg::rightRotate32(w[i-2], 19) ^
-            sha256_pkg::rightRotate32(w[i-2], 10);
+    for (j = 0; j < i; j++) begin
+      always @(posedge clk) begin
+        w_temp[i-15][j] <= w_temp[i-16][j];
+      end
     end
-    always @(posedge clk) begin
-      w[i] <= w[i-16] + s0 + w[i-7] + s1;
+    for (j = i; j < 64; j++) begin
+      logic [31:0] s0;
+      logic [31:0] s1;
+      always_comb begin
+        s0 <= sha256_pkg::rightRotate32(w_temp[j-16][i-15], 7) ^
+              sha256_pkg::rightRotate32(w_temp[j-16][i-15], 18) ^
+              sha256_pkg::rightShift(w_temp[j-16][i-15], 3);
+        s1 <= sha256_pkg::rightRotate32(w_temp[j-16][i-2], 17) ^
+              sha256_pkg::rightRotate32(w_temp[j-16][i-2], 19) ^
+              sha256_pkg::rightShift(w_temp[j-16][i-2], 10);
+      end
+      always @(posedge clk) begin
+        w_temp[j-15][i] <= w_temp[j-16][i-16] + s0 + w_temp[j-16][i-7] + s1;
+      end
+    end
+  end
+  for (i = 0; i < 64; i++) begin
+    always_comb begin
+      w[i] = w_temp[48][i];
     end
   end
 endgenerate

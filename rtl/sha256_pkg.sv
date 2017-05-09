@@ -19,6 +19,20 @@ const logic [63:0][31:0]  K = {
   32'h90BE_FFFA, 32'hA450_6CEB, 32'hBEF9_A3F7, 32'hC671_78F2
 };
 
+typedef logic [7:0][31:0] HashState;
+
+const HashState H = {
+  32'h6A09_E667,
+  32'hBB67_AE85,
+  32'h3C6E_F372,
+  32'hA54F_F53A,
+  32'h510E_527F,
+  32'h9B05_688C,
+  32'h1F83_D9AB,
+  32'h5BE0_CD19
+};
+
+
 typedef enum logic [3:0] {
   RESET,
   IDLE,
@@ -26,7 +40,6 @@ typedef enum logic [3:0] {
   DONE
 } ShaState;
 
-typedef logic [7:0][31:0] HashState;
 
 typedef struct {
   logic [63:0] length;
@@ -45,6 +58,10 @@ typedef logic [15:0][31:0] Chunk;
 function logic[31:0] rightRotate32(logic [31:0] val, int bits);
   rightRotate32 = (val >> bits) | (val << (32 - bits));
 endfunction : rightRotate32
+
+function logic[31:0] rightShift(logic [31:0] val, int bits);
+  rightShift = (val >> bits);
+endfunction : rightShift
 
 // function HashStateToDigest(HashState state);
 //   return HashStateToDigest = {state[0], state[1], state[2], state[3],

@@ -19,21 +19,21 @@ always_ff @(posedge clk_axi) begin
   if(rst) begin
     ctx_vld <= 0;
     ctx.length <= 64'h0;
-    ctx.state <= '0;
+    ctx.state <= sha256_pkg::H;
     ctx.curlen <= 64'h0;
     ctx.buffer <= '0;
   end else begin
     ctx_vld <= 1'b1;
-    ctx.length <= 64'd256;
-    ctx.state <= '0;
-    ctx.curlen <= 64'd256;
+    ctx.length <= 64'd64;
+    ctx.state <= sha256_pkg::H;
+    ctx.curlen <= 64'd64;
     ctx.buffer <= '0;
   end
 end
 
 // Dummy "RAM"
 always @(posedge clk_axi) begin
-  mem_data <= {mem_addr[7:0] + 8'd3, mem_addr[7:0] + 8'd2, mem_addr[7:0] + 8'd1, mem_addr[7:0]};
+  mem_data <= 32'h4141_4141; //{mem_addr[7:0] + 8'd3, mem_addr[7:0] + 8'd2, mem_addr[7:0] + 8'd1, mem_addr[7:0]};
   mem_data_vld <= mem_addr_vld;
 end
 
