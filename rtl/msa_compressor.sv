@@ -70,7 +70,7 @@ always @(posedge clk) begin
     ctx_latch.buffer <= ctx_in.buffer;
   end
   if(w_vld & w_rdy) begin
-    w_d1 <= w_vld;
+    w_d1 <= w;
   end
 end
 
@@ -134,7 +134,7 @@ generate
       s1 <= sha256_pkg::rightRotate32(e[i], 6) ^
             sha256_pkg::rightRotate32(e[i], 11) ^
             sha256_pkg::rightRotate32(e[i], 25);
-      ch <= (e[i] & f[i]) ^ ((~e[i]) & g[i]);
+      ch <= (g[i] ^ (e[i] & (f[i] ^ g[i])));
       temp1 <= h[i] + s1 + ch + sha256_pkg::K[i] + w_d1[i];
       s0 <= sha256_pkg::rightRotate32(a[i], 2) ^
             sha256_pkg::rightRotate32(a[i], 13) ^
