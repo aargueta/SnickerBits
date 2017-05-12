@@ -11,7 +11,11 @@ module sha256 (
   output logic mem_addr_vld,
   output logic [31:0] mem_addr,
   input logic mem_data_vld,
-  input logic [31:0] mem_data
+  input logic [31:0] mem_data,
+
+  output logic hash_rdy,
+  output logic hash_vld,
+  output logic [255:0] hash
 );
 
 
@@ -48,10 +52,6 @@ chunk_processor i_chunk_processor (
 // end
 
 
-logic hash_rdy;
-logic hash_vld;
-logic [255:0] hash;
-assign hash_rdy = 1'b1;
 sha256_transform ctx_transform(
   .clk           (clk),
   .rst           (rst),
@@ -64,7 +64,7 @@ sha256_transform ctx_transform(
   .chunk_data_vld(chunk_out_vld),
   .chunk_data    (chunk_out),
 
-  .hash_rdy   (hash_rdy),
+  .hash_rdy   (1'b1 /*hash_rdy*/),
   .hash_vld   (hash_vld),
   .hash       (hash)
 );

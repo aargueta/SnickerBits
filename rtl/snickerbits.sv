@@ -3,7 +3,11 @@
 module snickerbits(
   input logic clk_axi,
   input logic rst,
-  output logic led
+  output logic led,
+  
+  output logic hash_rdy,
+  output logic hash_vld,
+  output logic [255:0] hash
 );
 
 logic ctx_rdy;
@@ -48,7 +52,11 @@ sha256 i_sha256 (
   .mem_addr_vld(mem_addr_vld),
   .mem_addr    (mem_addr),
   .mem_data_vld(mem_data_vld),
-  .mem_data    (mem_data)
+  .mem_data    (mem_data),
+  
+  .hash_rdy   (hash_rdy),
+  .hash_vld   (hash_vld),
+  .hash       (hash)
 );
 
 
