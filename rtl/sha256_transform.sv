@@ -24,16 +24,16 @@ logic [63:0][31:0] w; // 64-entry message schedule array (MSA)
 logic w_rdy = 1'b1;
 logic w_vld;
 msa_extender msa_extender(
-  .clk       (clk),
-  .rst       (rst),
+  .clk          (clk),
+  .rst          (rst),
 
-  .chunk_vld (chunk_data_vld),
-  .chunk_rdy (chunk_data_rdy),
-  .chunk_data(chunk_data),
+  .chunk_vld    (chunk_data_vld),
+  .chunk_rdy    (chunk_data_rdy),
+  .chunk_data   (chunk_data),
 
-  .w_rdy     (w_rdy),
-  .w_vld     (w_vld),
-  .w         (w)
+  .w_rdy        (w_rdy),
+  .w_vld        (w_vld),
+  .w            (w)
 );
 
 
@@ -67,7 +67,7 @@ always_comb begin
       LOADING: nstate = (ctx_rdy & ctx_vld)? COMPRESSING : LOADING;
       COMPRESSING: begin
         if(ctx_out_vld & ctx_out_rdy) begin
-          nstate = (ctx_out.curlen > 0)? COMPRESSING : DONE;
+          nstate = (ctx_out.curlen <= ctx_out.length)? COMPRESSING : DONE;
         end else begin
           nstate = state;
         end

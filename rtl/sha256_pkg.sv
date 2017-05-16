@@ -44,7 +44,7 @@ typedef enum logic [3:0] {
 typedef struct {
   logic [63:0] length;
   HashState state;
-  logic [31:0] curlen;
+  logic [63:0] curlen;
   logic [31:0] buffer;
 } ShaContext;
 

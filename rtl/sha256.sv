@@ -19,6 +19,10 @@ module sha256 (
 );
 
 
+logic ctx_out_rdy;
+logic ctx_out_vld;
+sha256_pkg::ShaContext ctx_out;
+
 logic chunk_out_rdy;
 logic chunk_out_vld;
 logic [15:0][31:0] chunk_out;
@@ -31,9 +35,13 @@ chunk_processor i_chunk_processor (
   .mem_data_vld (mem_data_vld),
   .mem_data     (mem_data),
 
-  .ctx_rdy      (ctx_rdy),
-  .ctx_vld      (ctx_vld),
-  .ctx          (ctx),
+  .ctx_in_rdy   (ctx_rdy),
+  .ctx_in_vld   (ctx_vld),
+  .ctx_in       (ctx),
+
+  .ctx_out_rdy(ctx_out_rdy),
+  .ctx_out_vld(ctx_out_vld),
+  .ctx_out    (ctx_out),
 
   .chunk_out_rdy(chunk_out_rdy),
   .chunk_out_vld(chunk_out_vld),
@@ -56,9 +64,9 @@ sha256_transform ctx_transform(
   .clk           (clk),
   .rst           (rst),
 
-  .ctx_rdy    (/*ctx_rdy*/),
-  .ctx_vld    (ctx_vld),
-  .ctx        (ctx),
+  .ctx_rdy    (ctx_out_rdy),
+  .ctx_vld    (ctx_out_vld),
+  .ctx        (ctx_out),
 
   .chunk_data_rdy(chunk_out_rdy),
   .chunk_data_vld(chunk_out_vld),

@@ -9,9 +9,14 @@ module chunk_processor (
   input logic [31:0] mem_data,
 
   // Context in
-  output logic ctx_rdy,
-  input logic ctx_vld,
-  input sha256_pkg::ShaContext ctx,
+  output logic ctx_in_rdy,
+  input logic ctx_in_vld,
+  input sha256_pkg::ShaContext ctx_in,
+
+  // Context out
+  input logic ctx_out_rdy,
+  output logic ctx_out_vld,
+  output sha256_pkg::ShaContext ctx_out,
 
   // Chunk out
   input logic chunk_out_rdy,
@@ -59,22 +64,27 @@ end
 
 always_ff @(posedge clk) begin
   if(state == IDLE) begin
-    ctx_rdy <= 1'b0;
+    ctx_in_rdy <= 1'b0;
     ctx_latched <= 0;
   end else if(state == CTX_LOAD) begin
-    ctx_rdy <= ~ctx_latched;
-    ctx_latched <= ctx_latched | (ctx_rdy & ctx_vld);
+    ctx_in_rdy <= ~ctx_latched;
+    ctx_latched <= ctx_latched | (ctx_in_rdy & ctx_in_vld);
   end
 end
 
-
+assign ctx_out_vld = ctx_latched;
 always @(posedge clk) begin
   case (state)
     CTX_LOAD: begin
-      mem_addr <= ctx.buffer;
+      ctx_out.length <= total_length;
+      ctx_out.state <= ctx_in.state;
+      ctx_out.curlen <= ctx_in.curlen;
+      ctx_out.buffer <= ctx_in.buffer;
+      mem_addr <= ctx_in.buffer;
     end
     CHUNK_FILL: begin
       mem_addr <= mem_addr + (nstate == CHUNK_FILL? sha256_pkg::MEM_WORD_BYTES : 32'h0);
+      ctx_out <= ctx_out;
     end
     default : ;
   endcase
@@ -82,22 +92,30 @@ end
 
 logic [31:0] ctx_rd_offset;
 logic [31:0] chunk_rd_offset;
+logic [63:0] total_length;
 always @(posedge clk) begin
   case (state)
     CTX_LOAD: begin
       ctx_rd_offset <= 32'h0;
       chunk_rd_offset <= 32'h0;
+      total_length <= {ctx_in.length[63:9] +
+                       (ctx_in.length[8:0] > (9'd511 - sha256_pkg::MANDATORY_PADDING_BYTES))?
+                        55'd2 : 55'd1, 9'd0};
     end
     CHUNK_FILL: begin
       ctx_rd_offset <= ctx_rd_offset + (mem_data_vld? sha256_pkg::MEM_WORD_BYTES : 32'h0);
       chunk_rd_offset <= chunk_rd_offset + (mem_data_vld? sha256_pkg::MEM_WORD_BYTES : 32'h0);
+      total_length <= total_length;
     end
     CHUNK_READY: begin
+      ctx_rd_offset <= ctx_rd_offset;
       chunk_rd_offset <= 32'h0;
+      total_length <= total_length;
     end
     default: begin
       ctx_rd_offset <= ctx_rd_offset;
       chunk_rd_offset <= chunk_rd_offset;
+      total_length <= total_length;
     end
   endcase
 end
@@ -105,7 +123,7 @@ end
 assign chunk_loaded = (chunk_rd_offset + sha256_pkg::MEM_WORD_BYTES >= sha256_pkg::BYTES_IN_CHUNK);
 assign chunk_out_vld = (state == CHUNK_READY);
 assign is_last_chunk = (ca_state != DATA);
-// assign mem_addr = ctx.buffer + ctx_rd_offset;
+// assign mem_addr = ctx_in.buffer + ctx_rd_offset;
 assign mem_addr_vld = (state == CHUNK_FILL);
 
 logic [31:0] payload_remainder;
@@ -117,16 +135,16 @@ logic [31:0] end_word;
 logic [31:0] zero_pad_limit;
 logic mem_data_full_word;
 always_comb begin
-  payload_remainder = (ctx.length % sha256_pkg::BYTES_IN_CHUNK);
-  mem_data_full_word = ctx_rd_offset < ctx.length;
+  payload_remainder = (ctx_in.length % sha256_pkg::BYTES_IN_CHUNK);
+  mem_data_full_word = ctx_rd_offset < ctx_in.length;
   if(payload_remainder <= sha256_pkg::BYTES_IN_CHUNK - sha256_pkg::MANDATORY_PADDING_BYTES) begin
     pad_zero_bytes = sha256_pkg::BYTES_IN_CHUNK - payload_remainder - sha256_pkg::MANDATORY_PADDING_BYTES;
   end else begin
     pad_zero_bytes = (sha256_pkg::BYTES_IN_CHUNK * 2) - payload_remainder - sha256_pkg::MANDATORY_PADDING_BYTES;
   end
   pad_zero_words = pad_zero_bytes[31:2];
-  zero_pad_limit = ctx.length + end_word_padding + (pad_zero_words * sha256_pkg::MEM_WORD_BYTES);
-  case(ctx.length % sha256_pkg::MEM_WORD_BYTES)
+  zero_pad_limit = ctx_in.length + end_word_padding + (pad_zero_words * sha256_pkg::MEM_WORD_BYTES);
+  case(ctx_in.length % sha256_pkg::MEM_WORD_BYTES)
     0: begin
       end_word = 32'h8000_0000;
       end_word_mask = 32'h0000_0000;
@@ -196,8 +214,8 @@ always_ff @(posedge clk) begin
       DATA:     chunk_out[chunk_rd_offset[31:2]] <= mem_data;
       END_WORD: chunk_out[chunk_rd_offset[31:2]] <= mem_data & end_word_mask | end_word;
       ZERO_PAD: chunk_out[chunk_rd_offset[31:2]] <= 32'h0000_0000;
-      LENGTH_1: chunk_out[chunk_rd_offset[31:2]] <= ctx.length[63:32];
-      LENGTH_2: chunk_out[chunk_rd_offset[31:2]] <= ctx.length[31:0];
+      LENGTH_1: chunk_out[chunk_rd_offset[31:2]] <= total_length[63:32];
+      LENGTH_2: chunk_out[chunk_rd_offset[31:2]] <= total_length[31:0];
       default : ;
     endcase
   end else begin
