@@ -44,15 +44,16 @@ typedef enum logic [3:0] {
 typedef struct {
   logic [63:0] length;
   HashState state;
-  logic [63:0] curlen;
+  logic [31:0] curlen;
   logic [31:0] buffer;
 } ShaContext;
 
-const int NUM_LENGTH_BYTES = 64/8;
-const int MANDATORY_PADDING_BYTES = 1 + NUM_LENGTH_BYTES;
-const int MEM_WORD_BYTES = 4;
-const int BYTES_IN_CHUNK = 64;
-const int MEM_WORDS_PER_CHUNK = (BYTES_IN_CHUNK / MEM_WORD_BYTES);
+const logic [31:0] NUM_LENGTH_BYTES = 32'd64 / 32'd8;
+const logic [31:0] MANDATORY_PADDING_BYTES = 32'd1 + NUM_LENGTH_BYTES;
+const logic [31:0] MANDATORY_PADDING_BITS = 32'h8 + NUM_LENGTH_BYTES;
+const logic [31:0] MEM_WORD_BYTES = 32'd4;
+const logic [31:0] BYTES_IN_CHUNK = 32'd64;
+const logic [31:0] MEM_WORDS_PER_CHUNK = (BYTES_IN_CHUNK / MEM_WORD_BYTES);
 typedef logic [15:0][31:0] Chunk;
 
 function logic[31:0] rightRotate32(logic [31:0] val, int bits);
@@ -62,6 +63,14 @@ endfunction : rightRotate32
 function logic[31:0] rightShift(logic [31:0] val, int bits);
   rightShift = (val >> bits);
 endfunction : rightShift
+
+function logic[31:0] gamma0(logic [31:0] val);
+  gamma0 = rightRotate32(val, 7) ^ rightRotate32(val, 18) ^ rightShift(val, 3);
+endfunction : gamma0
+
+function logic[31:0] gamma1(logic [31:0] val);
+  gamma1 = rightRotate32(val, 17) ^ rightRotate32(val, 19) ^ rightShift(val, 10);
+endfunction : gamma1
 
 // function HashStateToDigest(HashState state);
 //   return HashStateToDigest = {state[0], state[1], state[2], state[3],

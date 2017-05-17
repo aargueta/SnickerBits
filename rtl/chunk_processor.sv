@@ -73,12 +73,13 @@ always_ff @(posedge clk) begin
 end
 
 assign ctx_out_vld = ctx_latched;
+logic [63:0] total_length;
 always @(posedge clk) begin
   case (state)
     CTX_LOAD: begin
-      ctx_out.length <= total_length;
+      ctx_out.length <= ctx_in.length;
       ctx_out.state <= ctx_in.state;
-      ctx_out.curlen <= ctx_in.curlen;
+      ctx_out.curlen <= total_length[34:3];
       ctx_out.buffer <= ctx_in.buffer;
       mem_addr <= ctx_in.buffer;
     end
@@ -92,14 +93,13 @@ end
 
 logic [31:0] ctx_rd_offset;
 logic [31:0] chunk_rd_offset;
-logic [63:0] total_length;
 always @(posedge clk) begin
   case (state)
     CTX_LOAD: begin
       ctx_rd_offset <= 32'h0;
       chunk_rd_offset <= 32'h0;
       total_length <= {ctx_in.length[63:9] +
-                       (ctx_in.length[8:0] > (9'd511 - sha256_pkg::MANDATORY_PADDING_BYTES))?
+                       (ctx_in.length[8:0] > (9'd511 - sha256_pkg::MANDATORY_PADDING_BITS))?
                         55'd2 : 55'd1, 9'd0};
     end
     CHUNK_FILL: begin

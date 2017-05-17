@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="snickerbits_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="sha256_pkg" />
+            <top_module name="snickerbits_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="4000000001fs"></ZoomEndTime>
+      <Cursor1Time time="2135000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="188"></NameColumnWidth>
+      <ValueColumnWidth column_width="202"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="22" />
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_rdy" type="logic">
+      <obj_property name="ElementShortName">ctx_rdy</obj_property>
+      <obj_property name="ObjectShortName">ctx_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_vld" type="logic">
+      <obj_property name="ElementShortName">ctx_vld</obj_property>
+      <obj_property name="ObjectShortName">ctx_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx" type="array">
+      <obj_property name="ElementShortName">ctx</obj_property>
+      <obj_property name="ObjectShortName">ctx</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/chunk_data_rdy" type="logic">
+      <obj_property name="ElementShortName">chunk_data_rdy</obj_property>
+      <obj_property name="ObjectShortName">chunk_data_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/chunk_data_vld" type="logic">
+      <obj_property name="ElementShortName">chunk_data_vld</obj_property>
+      <obj_property name="ObjectShortName">chunk_data_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/chunk_data" type="array">
+      <obj_property name="ElementShortName">chunk_data[15:0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">chunk_data[15:0][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/hash_rdy" type="logic">
+      <obj_property name="ElementShortName">hash_rdy</obj_property>
+      <obj_property name="ObjectShortName">hash_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/hash_vld" type="logic">
+      <obj_property name="ElementShortName">hash_vld</obj_property>
+      <obj_property name="ObjectShortName">hash_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/hash" type="array">
+      <obj_property name="ElementShortName">hash[255:0]</obj_property>
+      <obj_property name="ObjectShortName">hash[255:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/w" type="array">
+      <obj_property name="ElementShortName">w[63:0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">w[63:0][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/w_rdy" type="logic">
+      <obj_property name="ElementShortName">w_rdy</obj_property>
+      <obj_property name="ObjectShortName">w_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/w_vld" type="logic">
+      <obj_property name="ElementShortName">w_vld</obj_property>
+      <obj_property name="ObjectShortName">w_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_in_rdy" type="logic">
+      <obj_property name="ElementShortName">ctx_in_rdy</obj_property>
+      <obj_property name="ObjectShortName">ctx_in_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_in_vld" type="logic">
+      <obj_property name="ElementShortName">ctx_in_vld</obj_property>
+      <obj_property name="ObjectShortName">ctx_in_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_in" type="array">
+      <obj_property name="ElementShortName">ctx_in</obj_property>
+      <obj_property name="ObjectShortName">ctx_in</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_out_rdy" type="logic">
+      <obj_property name="ElementShortName">ctx_out_rdy</obj_property>
+      <obj_property name="ObjectShortName">ctx_out_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_out_vld" type="logic">
+      <obj_property name="ElementShortName">ctx_out_vld</obj_property>
+      <obj_property name="ObjectShortName">ctx_out_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/ctx_out" type="array">
+      <obj_property name="ElementShortName">ctx_out</obj_property>
+      <obj_property name="ObjectShortName">ctx_out</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/state" type="array">
+      <obj_property name="ElementShortName">state[31:0]</obj_property>
+      <obj_property name="ObjectShortName">state[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/nstate" type="array">
+      <obj_property name="ElementShortName">nstate[31:0]</obj_property>
+      <obj_property name="ObjectShortName">nstate[31:0]</obj_property>
+   </wvobject>
+</wave_config>

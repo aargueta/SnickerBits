@@ -4,7 +4,7 @@ module snickerbits(
   input logic clk_axi,
   input logic rst,
   output logic led,
-  
+
   output logic hash_rdy,
   output logic hash_vld,
   output logic [255:0] hash
@@ -24,13 +24,13 @@ always_ff @(posedge clk_axi) begin
     ctx_vld <= 0;
     ctx.length <= 64'h0;
     ctx.state <= sha256_pkg::H;
-    ctx.curlen <= 64'h0;
+    ctx.curlen <= 32'h0;
     ctx.buffer <= '0;
   end else begin
     ctx_vld <= 1'b1;
-    ctx.length <= 64'd64;
+    ctx.length <= 64'd512; // 512 bits, 64 bytes
     ctx.state <= sha256_pkg::H;
-    ctx.curlen <= 64'd64;
+    ctx.curlen <= 32'd64;
     ctx.buffer <= '0;
   end
 end
@@ -53,7 +53,7 @@ sha256 i_sha256 (
   .mem_addr    (mem_addr),
   .mem_data_vld(mem_data_vld),
   .mem_data    (mem_data),
-  
+
   .hash_rdy   (hash_rdy),
   .hash_vld   (hash_vld),
   .hash       (hash)

@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1343574146fs"></ZoomStartTime>
-      <ZoomEndTime time="1566718531fs"></ZoomEndTime>
-      <Cursor1Time time="1418528000fs"></Cursor1Time>
+      <ZoomStartTime time="2850583333fs"></ZoomStartTime>
+      <ZoomEndTime time="3029883334fs"></ZoomEndTime>
+      <Cursor1Time time="3000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="235"></NameColumnWidth>
-      <ValueColumnWidth column_width="157"></ValueColumnWidth>
+      <ValueColumnWidth column_width="155"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="60" />
+   <WVObjectSize size="63" />
    <wvobject fp_name="/snickerbits_tb/clk_axi" type="logic">
       <obj_property name="ElementShortName">clk_axi</obj_property>
       <obj_property name="ObjectShortName">clk_axi</obj_property>
@@ -428,5 +428,17 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/msa_compressor/\main_compression[63].temp2 " type="array">
       <obj_property name="ElementShortName">\main_compression[63].temp2 [31:0]</obj_property>
       <obj_property name="ObjectShortName">\main_compression[63].temp2 [31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/hash_rdy" type="logic">
+      <obj_property name="ElementShortName">hash_rdy</obj_property>
+      <obj_property name="ObjectShortName">hash_rdy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/hash_vld" type="logic">
+      <obj_property name="ElementShortName">hash_vld</obj_property>
+      <obj_property name="ObjectShortName">hash_vld</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/ctx_transform/hash" type="array">
+      <obj_property name="ElementShortName">hash[255:0]</obj_property>
+      <obj_property name="ObjectShortName">hash[255:0]</obj_property>
    </wvobject>
 </wave_config>

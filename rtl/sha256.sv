@@ -39,9 +39,9 @@ chunk_processor i_chunk_processor (
   .ctx_in_vld   (ctx_vld),
   .ctx_in       (ctx),
 
-  .ctx_out_rdy(ctx_out_rdy),
-  .ctx_out_vld(ctx_out_vld),
-  .ctx_out    (ctx_out),
+  .ctx_out_rdy  (ctx_out_rdy),
+  .ctx_out_vld  (ctx_out_vld),
+  .ctx_out      (ctx_out),
 
   .chunk_out_rdy(chunk_out_rdy),
   .chunk_out_vld(chunk_out_vld),
@@ -64,17 +64,17 @@ sha256_transform ctx_transform(
   .clk           (clk),
   .rst           (rst),
 
-  .ctx_rdy    (ctx_out_rdy),
-  .ctx_vld    (ctx_out_vld),
-  .ctx        (ctx_out),
+  .ctx_rdy       (ctx_out_rdy),
+  .ctx_vld       (ctx_out_vld),
+  .ctx           (ctx_out),
 
   .chunk_data_rdy(chunk_out_rdy),
   .chunk_data_vld(chunk_out_vld),
   .chunk_data    (chunk_out),
 
-  .hash_rdy   (1'b1 /*hash_rdy*/),
-  .hash_vld   (hash_vld),
-  .hash       (hash)
+  .hash_rdy      (1'b1 /*hash_rdy*/),
+  .hash_vld      (hash_vld),
+  .hash          (hash)
 );
 
 

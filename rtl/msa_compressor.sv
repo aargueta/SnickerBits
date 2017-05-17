@@ -168,7 +168,7 @@ always @(posedge clk) begin
     ctx_out.state[2] <= f[0] + f[64];
     ctx_out.state[1] <= g[0] + g[64];
     ctx_out.state[0] <= h[0] + h[64];
-    ctx_out.curlen <= ctx_latch.curlen + (sha256_pkg::BYTES_IN_CHUNK * 8);
+    ctx_out.curlen <= ctx_latch.curlen - sha256_pkg::BYTES_IN_CHUNK;
     ctx_out.buffer <= ctx_latch.buffer;
   end else begin
     ctx_out <= ctx_out;
