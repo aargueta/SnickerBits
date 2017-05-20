@@ -22,14 +22,14 @@ const logic [63:0][31:0]  K = {
 typedef logic [7:0][31:0] HashState;
 
 const HashState H = {
-  32'h6A09_E667,
-  32'hBB67_AE85,
-  32'h3C6E_F372,
-  32'hA54F_F53A,
-  32'h510E_527F,
-  32'h9B05_688C,
+  32'h5BE0_CD19,
   32'h1F83_D9AB,
-  32'h5BE0_CD19
+  32'h9B05_688C,
+  32'h510E_527F,
+  32'hA54F_F53A,
+  32'h3C6E_F372,
+  32'hBB67_AE85,
+  32'h6A09_E667
 };
 
 

@@ -57,8 +57,8 @@ typedef enum {
 CompressionLoopState state;
 CompressionLoopState nstate;
 assign hash_vld = (state == DONE);
-assign hash = ctx_out.state;
-
+assign hash = {ctx_out.state[0], ctx_out.state[1], ctx_out.state[2], ctx_out.state[3],
+               ctx_out.state[4], ctx_out.state[5], ctx_out.state[6], ctx_out.state[7]};
 always_comb begin
   if(rst) begin
     nstate = LOADING;
