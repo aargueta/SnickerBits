@@ -86,28 +86,11 @@ always @(posedge clk) begin
   end
 end
 
-always @(posedge clk) begin
-  case(state)
-    LOADING: begin
-      ctx_rdy <= ctx_in_rdy;
-      ctx_in_vld <= ctx_vld;
-      ctx_in <= ctx;
-      ctx_out_rdy <= 1'b0;
-    end
-    COMPRESSING: begin
-      ctx_rdy <= 1'b0;
-      ctx_in_vld <= ctx_out_vld;
-      ctx_in <= ctx_out;
-      ctx_out_rdy <= ctx_in_rdy;
-    end
-    default: begin
-      ctx_rdy <= 1'b0;
-      ctx_in_vld <= 1'b0;
-      ctx_in <= ctx_out;
-      ctx_out_rdy <= 1'b0;
-    end
-  endcase
-end
+assign ctx_rdy = ctx_in_rdy;
+assign ctx_in_vld = ctx_vld;
+assign ctx_in = ctx;
+assign ctx_out_rdy = (state == DONE) & hash_rdy;
+
 
 msa_compressor msa_compressor (
   .clk        (clk),

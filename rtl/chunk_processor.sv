@@ -67,7 +67,7 @@ always_ff @(posedge clk) begin
     ctx_in_rdy <= 1'b0;
     ctx_latched <= 0;
   end else if(state == CTX_LOAD) begin
-    ctx_in_rdy <= ~ctx_latched;
+    ctx_in_rdy <= ~(ctx_latched | (ctx_in_rdy & ctx_in_vld));
     ctx_latched <= ctx_latched | (ctx_in_rdy & ctx_in_vld);
   end
 end
@@ -92,8 +92,12 @@ always @(posedge clk) begin
 end
 
 logic [31:0] ctx_rd_offset;
+logic [31:0] ctx_rd_offset_d1;
 logic [31:0] chunk_rd_offset;
+logic [31:0] chunk_rd_offset_d1;
 always @(posedge clk) begin
+  ctx_rd_offset_d1 <= ctx_rd_offset;
+  chunk_rd_offset_d1 <= chunk_rd_offset;
   case (state)
     CTX_LOAD: begin
       ctx_rd_offset <= 32'h0;
@@ -103,7 +107,7 @@ always @(posedge clk) begin
                         55'd2 : 55'd1, 9'd0};
     end
     CHUNK_FILL: begin
-      ctx_rd_offset <= ctx_rd_offset + (mem_data_vld? sha256_pkg::MEM_WORD_BYTES : 32'h0);
+      ctx_rd_offset <= mem_data_vld? ctx_rd_offset + sha256_pkg::MEM_WORD_BYTES : ctx_rd_offset;
       chunk_rd_offset <= chunk_rd_offset + (mem_data_vld? sha256_pkg::MEM_WORD_BYTES : 32'h0);
       total_length <= total_length;
     end
@@ -135,16 +139,16 @@ logic [31:0] end_word;
 logic [31:0] zero_pad_limit;
 logic mem_data_full_word;
 always_comb begin
-  payload_remainder = (ctx_in.length % sha256_pkg::BYTES_IN_CHUNK);
-  mem_data_full_word = ctx_rd_offset < ctx_in.length[34:3];
+  payload_remainder = (ctx_out.length[34:3] % sha256_pkg::BYTES_IN_CHUNK);
+  mem_data_full_word = ctx_rd_offset_d1 < ctx_out.length[34:3];
   if(payload_remainder <= sha256_pkg::BYTES_IN_CHUNK - sha256_pkg::MANDATORY_PADDING_BYTES) begin
     pad_zero_bytes = sha256_pkg::BYTES_IN_CHUNK - payload_remainder - sha256_pkg::MANDATORY_PADDING_BYTES;
   end else begin
     pad_zero_bytes = (sha256_pkg::BYTES_IN_CHUNK * 2) - payload_remainder - sha256_pkg::MANDATORY_PADDING_BYTES;
   end
   pad_zero_words = pad_zero_bytes[31:2];
-  zero_pad_limit = ctx_in.length[34:3] + end_word_padding + (pad_zero_words * sha256_pkg::MEM_WORD_BYTES);
-  case(ctx_in.length % sha256_pkg::MEM_WORD_BYTES)
+  zero_pad_limit = ctx_out.length[34:3] + end_word_padding + (pad_zero_words * sha256_pkg::MEM_WORD_BYTES);
+  case(ctx_out.length[34:3] % sha256_pkg::MEM_WORD_BYTES)
     0: begin
       end_word = 32'h8000_0000;
       end_word_mask = 32'h0000_0000;
@@ -211,11 +215,11 @@ end
 always_ff @(posedge clk) begin
   if(mem_data_vld) begin
     case (ca_state)
-      DATA:     chunk_out[chunk_rd_offset[31:2]] <= mem_data;
-      END_WORD: chunk_out[chunk_rd_offset[31:2]] <= mem_data & end_word_mask | end_word;
-      ZERO_PAD: chunk_out[chunk_rd_offset[31:2]] <= 32'h0000_0000;
-      LENGTH_1: chunk_out[chunk_rd_offset[31:2]] <= ctx_in.length[63:32];
-      LENGTH_2: chunk_out[chunk_rd_offset[31:2]] <= ctx_in.length[31:0];
+      DATA:     chunk_out[chunk_rd_offset_d1[31:2]] <= mem_data;
+      END_WORD: chunk_out[chunk_rd_offset_d1[31:2]] <= mem_data & end_word_mask | end_word;
+      ZERO_PAD: chunk_out[chunk_rd_offset_d1[31:2]] <= 32'h0000_0000;
+      LENGTH_1: chunk_out[chunk_rd_offset_d1[31:2]] <= ctx_out.length[63:32];
+      LENGTH_2: chunk_out[chunk_rd_offset_d1[31:2]] <= ctx_out.length[31:0];
       default : ;
     endcase
   end else begin

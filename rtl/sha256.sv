@@ -13,7 +13,7 @@ module sha256 (
   input logic mem_data_vld,
   input logic [31:0] mem_data,
 
-  output logic hash_rdy,
+  input logic hash_rdy,
   output logic hash_vld,
   output logic [255:0] hash
 );
@@ -72,7 +72,7 @@ sha256_transform ctx_transform(
   .chunk_data_vld(chunk_out_vld),
   .chunk_data    (chunk_out),
 
-  .hash_rdy      (1'b1 /*hash_rdy*/),
+  .hash_rdy      (hash_rdy),
   .hash_vld      (hash_vld),
   .hash          (hash)
 );

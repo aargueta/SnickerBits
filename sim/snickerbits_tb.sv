@@ -33,6 +33,8 @@ logic hash_rdy;
 logic hash_vld;
 logic [255:0] hash;
 
+logic [63:0] hash_num;
+
 // Dummy "RAM"
 always @(posedge clk_axi) begin
   mem_data <= 32'h4141_4141; //{mem_addr[7:0] + 8'd3, mem_addr[7:0] + 8'd2, mem_addr[7:0] + 8'd1, mem_addr[7:0]};
@@ -48,10 +50,18 @@ always_ff @(posedge clk_axi) begin
     ctx.buffer <= '0;
   end else begin
     ctx_vld <= 1'b1;
-    ctx.length <= 64'd512; // 512 bits, 64 bytes
+    ctx.length <= 64'd512 + hash_num; // 512 bits, 64 bytes
     ctx.state <= sha256_pkg::H;
-    ctx.curlen <= 32'd64;
+    ctx.curlen <= 32'd0;
     ctx.buffer <= '0;
+  end
+end
+
+always_ff @(posedge clk_axi) begin : proc_hash_num
+  if(rst) begin
+    hash_num <= 0;
+  end else if(ctx_rdy & ctx_vld) begin
+    hash_num <= hash_num + 64'h8;
   end
 end
 
