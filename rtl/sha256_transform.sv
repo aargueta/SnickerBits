@@ -44,7 +44,7 @@ logic ctx_in_rdy;
 logic ctx_in_vld;
 sha256_pkg::ShaContext ctx_in;
 
-logic ctx_out_rdy = 1'b1;
+logic ctx_out_rdy;
 logic ctx_out_vld;
 sha256_pkg::ShaContext ctx_out;
 

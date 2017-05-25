@@ -13,14 +13,14 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="4000000001fs"></ZoomEndTime>
-      <Cursor1Time time="4000000000fs"></Cursor1Time>
+      <ZoomEndTime time="11000000001fs"></ZoomEndTime>
+      <Cursor1Time time="6015000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="188"></NameColumnWidth>
-      <ValueColumnWidth column_width="202"></ValueColumnWidth>
+      <NameColumnWidth column_width="170"></NameColumnWidth>
+      <ValueColumnWidth column_width="109"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="36" />
+   <WVObjectSize size="38" />
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -36,10 +36,6 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/mem_addr" type="array">
       <obj_property name="ElementShortName">mem_addr[31:0]</obj_property>
       <obj_property name="ObjectShortName">mem_addr[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/mem_data_vld" type="logic">
-      <obj_property name="ElementShortName">mem_data_vld</obj_property>
-      <obj_property name="ObjectShortName">mem_data_vld</obj_property>
    </wvobject>
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/mem_data" type="array">
       <obj_property name="ElementShortName">mem_data[31:0]</obj_property>
@@ -69,7 +65,6 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/ctx_out" type="array">
       <obj_property name="ElementShortName">ctx_out</obj_property>
       <obj_property name="ObjectShortName">ctx_out</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/chunk_out_rdy" type="logic">
       <obj_property name="ElementShortName">chunk_out_rdy</obj_property>
@@ -82,6 +77,15 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/chunk_out" type="array">
       <obj_property name="ElementShortName">chunk_out[15:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">chunk_out[15:0][31:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/chunk_write_data" type="array">
+      <obj_property name="ElementShortName">chunk_write_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">chunk_write_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/state" type="array">
       <obj_property name="ElementShortName">state[31:0]</obj_property>
@@ -106,6 +110,7 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/ctx_rd_offset" type="array">
       <obj_property name="ElementShortName">ctx_rd_offset[31:0]</obj_property>
       <obj_property name="ObjectShortName">ctx_rd_offset[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/chunk_rd_offset" type="array">
       <obj_property name="ElementShortName">chunk_rd_offset[31:0]</obj_property>
@@ -122,6 +127,7 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/pad_zero_bytes" type="array">
       <obj_property name="ElementShortName">pad_zero_bytes[31:0]</obj_property>
       <obj_property name="ObjectShortName">pad_zero_bytes[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/pad_zero_words" type="array">
       <obj_property name="ElementShortName">pad_zero_words[29:0]</obj_property>
@@ -142,6 +148,10 @@
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/zero_pad_limit" type="array">
       <obj_property name="ElementShortName">zero_pad_limit[31:0]</obj_property>
       <obj_property name="ObjectShortName">zero_pad_limit[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/mem_data_vld" type="logic">
+      <obj_property name="ElementShortName">mem_data_vld</obj_property>
+      <obj_property name="ObjectShortName">mem_data_vld</obj_property>
    </wvobject>
    <wvobject fp_name="/snickerbits_tb/dut/i_sha256/i_chunk_processor/mem_data_full_word" type="logic">
       <obj_property name="ElementShortName">mem_data_full_word</obj_property>
